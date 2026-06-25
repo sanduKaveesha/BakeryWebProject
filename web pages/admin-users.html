@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users - Sweet Crumbs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/admin.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2><i class="bi bi-shop"></i> Sweet Crumbs</h2>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="admin-dashboard.html"><i class="bi bi-house-door"></i> Dashboard</a></li>
+        <li><a href="admin-products.html"><i class="bi bi-box-seam"></i> Manage Products</a></li>
+        <li><a href="admin-users.html" class="active"><i class="bi bi-people"></i> Manage Users</a></li>
+        <li><a href="admin-custom-cakes.html"><i class="bi bi-cake"></i> Custom Cake</a></li>
+        <li><a href="admin-orders.html"><i class="bi bi-bag"></i> Order Management</a></li>
+        <li><a href="admin-promocodes.html"><i class="bi bi-tag"></i> Promocode</a></li>
+
+        <li class="sidebar-heading">Analytics</li>
+        <li><a href="admin-orders-analytics.html"><i class="bi bi-graph-up"></i> Orders Analytics</a></li>
+        <li><a href="admin-revenue-analytics.html"><i class="bi bi-currency-dollar"></i> Revenue Analytics</a></li>
+        <li><a href="admin-product-performance.html"><i class="bi bi-box"></i> Product Performance</a></li>
+        <li><a href="admin-customer-analytics.html"><i class="bi bi-people"></i> Customer Analytics</a></li>
+        <li><a href="admin-custom-cake-analytics.html"><i class="bi bi-cake"></i> Custom Cake Analytics</a></li>
+
+        <li class="sidebar-heading">Account</li>
+        <li><a href="#"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Header -->
+    <header class="top-header">
+        <h1 class="page-title">Manage Users</h1>
+        <div class="header-actions">
+            <div class="search-bar">
+                <i class="bi bi-search"></i>
+                <input type="text" id="user-search" class="form-control" placeholder="Search by name, username, email...">
+            </div>
+            <div class="profile-area">
+                <div class="text-end me-2">
+                    <div class="fw-bold fs-6">Admin Super</div>
+                </div>
+                <i class="bi bi-person-circle fs-3 text-primary"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Area -->
+    <div class="content-area">
+
+        <!-- Summary Cards -->
+        <div class="summary-cards mb-4" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div class="card">
+                <div class="summary-card">
+                    <div class="summary-icon primary"><i class="bi bi-people"></i></div>
+                    <div class="summary-info">
+                        <h3>Total Users</h3>
+                        <p id="summary-total-users">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="summary-card">
+                    <div class="summary-icon success"><i class="bi bi-shield-check"></i></div>
+                    <div class="summary-info">
+                        <h3>Admins</h3>
+                        <p id="summary-admins">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="summary-card">
+                    <div class="summary-icon info"><i class="bi bi-person"></i></div>
+                    <div class="summary-info">
+                        <h3>Customers</h3>
+                        <p id="summary-customers">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex gap-3">
+                <select id="role-filter" class="form-select" style="width: 200px;">
+                    <option value="All">All Roles</option>
+                    <option value="ADMIN">Super Admins</option>
+                    <option value="USER">Customers</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="card">
+            <div class="card-header border-bottom pb-3 mb-0 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">User Registrations</h5>
+                <span class="badge bg-light text-dark border" id="total-results">0 users</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table mb-0 table-hover">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                    <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/admin-users.js"></script>
+</body>
+</html>

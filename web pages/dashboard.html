@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sweet Crumbs – Artisan Bakery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ── Toast container ─────────────────────────────────── -->
+<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1100"></div>
+
+<!-- ── Navbar ──────────────────────────────────────────── -->
+<nav class="navbar navbar-expand-md sticky-top sc-navbar" id="mainNav">
+    <div class="container-xl">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+            <i class="bi bi-cake2 text-primary fs-4"></i> Sweet Crumbs
+        </a>
+        <div class="d-flex align-items-center gap-2 ms-auto">
+            <!-- Cart -->
+            <a href="cart.html" class="btn btn-link position-relative text-dark p-2" aria-label="Cart">
+                <i class="bi bi-cart3 fs-5"></i>
+                <span class="badge bg-primary rounded-pill cart-badge" id="cartBadge">0</span>
+            </a>
+            <!-- Desktop nav -->
+            <div class="collapse navbar-collapse d-none d-md-flex" id="navbarNav">
+                <ul class="navbar-nav me-2">
+                    <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="catalog.html">Our Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="custom-cake.html">Custom Cakes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="cart.html">My Cart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="checkout.html">Orders</a></li>
+                    <li class="nav-item d-none" id="adminNavLink"><a class="nav-link" href="admin-dashboard.html">Admin</a></li>
+                </ul>
+            </div>
+            <!-- User buttons -->
+            <div id="guestActions">
+                <a href="login.html" class="btn btn-link text-muted d-none d-md-inline text-decoration-none">Sign In</a>
+            </div>
+            <div id="userActions" class="d-none">
+                <div class="dropdown">
+                    <button class="btn btn-link text-dark p-2" data-bs-toggle="dropdown"><i class="bi bi-person-circle fs-5"></i></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="javascript:void(0)" id="dropdownToggleProfileBtn"><i class="bi bi-gear me-2"></i>Edit Profile</a></li>
+                        <li><a class="dropdown-item" href="checkout.html"><i class="bi bi-bag me-2"></i>My Orders</a></li>
+                        <li><a class="dropdown-item" href="admin-dashboard.html"><i class="bi bi-grid me-2"></i>Admin Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item text-danger" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Mobile hamburger -->
+            <button class="btn btn-link text-dark d-md-none" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile menu offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title serif">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        <nav class="d-flex flex-column gap-1">
+            <a href="index.html" class="nav-link active px-3 py-2" data-bs-dismiss="offcanvas">Home</a>
+            <a href="catalog.html" class="nav-link px-3 py-2" data-bs-dismiss="offcanvas">Our Products</a>
+            <a href="custom-cake.html" class="nav-link px-3 py-2" data-bs-dismiss="offcanvas">Custom Cakes</a>
+            <a href="cart.html" class="nav-link px-3 py-2" data-bs-dismiss="offcanvas">My Cart</a>
+            <a href="checkout.html" class="nav-link px-3 py-2" data-bs-dismiss="offcanvas">Orders</a>
+        </nav>
+    </div>
+</div>
+
+<!-- ── Hero ────────────────────────────────────────────── -->
+<section class="hero-section">
+    <img src="images/hero-bakery.jpg" class="hero-img" alt="Artisan bakery" />
+    <div class="hero-overlay"></div>
+    <div class="container-xl hero-content text-center text-white py-5">
+        <h1 class="display-4 fw-bold mb-3">Baked with Love,<br>Crafted for You</h1>
+        <p class="lead mb-4 text-white-50 mx-auto" style="max-width:520px">
+            Discover our artisan cakes, pastries, and cookies — or design your dream custom cake for any special occasion.
+        </p>
+        <div class="d-flex flex-wrap gap-3 justify-content-center">
+            <a href="catalog.html" class="btn btn-primary btn-lg">Browse Our Menu <i class="bi bi-arrow-right ms-1"></i></a>
+            <a href="custom-cake.html" class="btn btn-outline-light btn-lg">Design Custom Cake</a>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- ── Profile Edit (conditionally shown) ─────────────── -->
+<section class="border-bottom py-5 d-none" id="profileSection">
+    <div class="container-xl">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <h2 class="serif h4 mb-4">Edit Your Profile</h2>
+                <form id="profileForm">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="profFullName" class="form-control" placeholder="John Doe" required />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" id="profEmail" class="form-control" placeholder="john@example.com" required />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" id="profPhone" class="form-control" placeholder="+1 (555) 123-4567" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Delivery Address</label>
+                            <input type="text" id="profAddress" class="form-control" placeholder="123 Main St, Springfield" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">New Password <small class="text-muted">(leave blank to keep current)</small></label>
+                            <input type="password" id="profPassword" class="form-control" placeholder="New password" />
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Categories ─────────────────────────────────────── -->
+<section class="py-5">
+    <div class="container-xl">
+        <div class="text-center mb-5">
+            <h2 class="serif h2 fw-bold">Explore Our Collection</h2>
+            <p class="text-muted">From everyday treats to celebration centerpieces</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <a href="catalog.html?category=cake" class="text-decoration-none">
+                    <div class="card sc-card h-100 overflow-hidden">
+                        <div class="img-zoom-wrap position-relative">
+                            <img src="images/chocolate-cake.jpg" class="card-img-top" alt="Artisan Cakes" />
+                            <div class="position-absolute bottom-0 start-0 m-3">
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width:40px;height:40px">
+                                    <i class="bi bi-cake2 text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="serif h5 fw-semibold">Artisan Cakes</h3>
+                            <p class="text-muted small">From classic flavors to elaborate designs, our cakes are baked fresh daily.</p>
+                            <span class="text-primary small fw-medium">View Collection <i class="bi bi-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="catalog.html?category=pastry" class="text-decoration-none">
+                    <div class="card sc-card h-100 overflow-hidden">
+                        <div class="img-zoom-wrap position-relative">
+                            <img src="images/pastries.jpg" class="card-img-top" alt="Fresh Pastries" />
+                            <div class="position-absolute bottom-0 start-0 m-3">
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width:40px;height:40px">
+                                    <i class="bi bi-sunrise text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="serif h5 fw-semibold">Fresh Pastries</h3>
+                            <p class="text-muted small">Buttery croissants, flaky danishes, and delicate tarts made each morning.</p>
+                            <span class="text-primary small fw-medium">View Collection <i class="bi bi-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="catalog.html?category=cookies" class="text-decoration-none">
+                    <div class="card sc-card h-100 overflow-hidden">
+                        <div class="img-zoom-wrap position-relative">
+                            <img src="images/cookies.jpg" class="card-img-top" alt="Cookies & Treats" />
+                            <div class="position-absolute bottom-0 start-0 m-3">
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width:40px;height:40px">
+                                    <i class="bi bi-circle text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="serif h5 fw-semibold">Cookies &amp; Treats</h3>
+                            <p class="text-muted small">Handcrafted cookies, macarons, and sweet treats for every occasion.</p>
+                            <span class="text-primary small fw-medium">View Collection <i class="bi bi-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Bestsellers ────────────────────────────────────── -->
+<section class="py-5" style="background:rgba(237,232,226,.3)">
+    <div class="container-xl">
+        <div class="d-flex align-items-end justify-content-between mb-4">
+            <div>
+                <h2 class="serif h2 fw-bold mb-1">Bestsellers</h2>
+                <p class="text-muted mb-0">Our most loved creations</p>
+            </div>
+            <a href="catalog.html" class="text-primary small fw-medium text-decoration-none d-none d-md-block">View all products <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="row g-4" id="featuredProducts"></div>
+        <div class="text-center mt-4 d-md-none">
+            <a href="catalog.html" class="btn btn-outline-secondary">View All Products <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- ── Features ───────────────────────────────────────── -->
+<section class="py-5">
+    <div class="container-xl">
+        <h2 class="serif h2 fw-bold text-center mb-5">Why Choose Sweet Crumbs?</h2>
+        <div class="row g-4 text-center">
+            <div class="col-sm-6 col-lg-3">
+                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:56px;height:56px">
+                    <i class="bi bi-stars text-primary fs-4"></i>
+                </div>
+                <h3 class="serif h5 fw-semibold">Handcrafted Quality</h3>
+                <p class="text-muted small">Every item made from scratch with premium ingredients sourced locally.</p>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:56px;height:56px">
+                    <i class="bi bi-cake2 text-primary fs-4"></i>
+                </div>
+                <h3 class="serif h5 fw-semibold">Custom Designs</h3>
+                <p class="text-muted small">Dream it, and we will bake it. Fully customizable cakes for any event.</p>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:56px;height:56px">
+                    <i class="bi bi-clock text-primary fs-4"></i>
+                </div>
+                <h3 class="serif h5 fw-semibold">Fresh Daily</h3>
+                <p class="text-muted small">Baked fresh every morning. We never sell day-old products.</p>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:56px;height:56px">
+                    <i class="bi bi-truck text-primary fs-4"></i>
+                </div>
+                <h3 class="serif h5 fw-semibold">Quick Delivery</h3>
+                <p class="text-muted small">Same-day delivery available for orders placed before 10 AM.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── CTA ─────────────────────────────────────────────── -->
+<section class="cta-section py-5 text-white text-center">
+    <div class="container-xl">
+        <h2 class="serif h2 fw-bold mb-3">Have a Special Occasion?</h2>
+        <p class="text-white-50 mx-auto mb-4" style="max-width:460px">Design your dream cake with our custom cake builder. Choose size, flavor, theme, and add a personal message.</p>
+        <a href="custom-cake.html" class="btn btn-light btn-lg">Start Designing <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────── -->
+<footer class="sc-footer py-5">
+    <div class="container-xl">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none mb-3">
+                    <i class="bi bi-cake2 text-primary fs-5"></i>
+                    <span class="serif fw-bold" style="color:#2d2016">Sweet Crumbs</span>
+                </a>
+                <p class="text-muted small">Handcrafted with love since 2020. Every bite tells a story of passion and quality ingredients.</p>
+            </div>
+            <div class="col-6 col-md-2">
+                <h6 class="fw-semibold mb-3">Quick Links</h6>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                    <li><a href="catalog.html">Our Products</a></li>
+                    <li><a href="custom-cake.html">Custom Cakes</a></li>
+                    <li><a href="cart.html">My Cart</a></li>
+                    <li><a href="checkout.html">My Orders</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md-2">
+                <h6 class="fw-semibold mb-3">Categories</h6>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                    <li><a href="catalog.html">Cakes</a></li>
+                    <li><a href="catalog.html">Pastries</a></li>
+                    <li><a href="catalog.html">Cookies</a></li>
+                    <li><a href="catalog.html">Custom Orders</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-semibold mb-3">Contact Us</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2 text-muted small">
+                    <li><i class="bi bi-geo-alt text-primary me-2"></i>123 Baker Street, Downtown</li>
+                    <li><i class="bi bi-telephone text-primary me-2"></i>+1 (555) 123-4567</li>
+                    <li><i class="bi bi-envelope text-primary me-2"></i>hello@sweetcrumbs.com</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4" />
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+            <p class="text-muted small mb-0">&copy; 2026 Sweet Crumbs Bakery. All rights reserved.</p>
+            <div class="d-flex gap-3">
+                <a href="#" class="text-muted small">Privacy Policy</a>
+                <a href="#" class="text-muted small">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- ── Auth Modal ─────────────────────────────────────── -->
+<div class="modal fade" id="authModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0 justify-content-center flex-column text-center">
+                <i class="bi bi-cake2 text-primary fs-2 mb-2"></i>
+                <h5 class="modal-title serif fw-bold fs-4">Welcome to Sweet Crumbs</h5>
+                <p class="text-muted small mt-1">Sign in to order your favourite treats or create an account.</p>
+                <button type="button" class="btn-close position-absolute end-0 top-0 m-3" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-2">
+                <div class="d-flex mb-4" role="group">
+                    <button class="auth-tab-btn active" id="loginTabBtn" onclick="switchAuthTab('login')">Login</button>
+                    <button class="auth-tab-btn" id="registerTabBtn" onclick="switchAuthTab('register')">Register</button>
+                </div>
+                <!-- Login -->
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" placeholder="you@example.com" required /></div>
+                    <div class="mb-3 position-relative">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="loginPw" placeholder="Your password" required />
+                        <button type="button" class="btn btn-link position-absolute end-0 top-0 mt-4 me-1 text-muted p-1" onclick="togglePw('loginPw',this)"><i class="bi bi-eye"></i></button>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                    <p class="text-center text-muted small mt-3">Forgot your password? <a href="#" class="text-primary">Reset it here</a></p>
+                </form>
+                <!-- Register -->
+                <form id="registerForm" class="d-none" onsubmit="handleRegister(event)">
+                    <div class="row g-3 mb-3">
+                        <div class="col-6"><label class="form-label">First Name</label><input class="form-control" placeholder="John" required /></div>
+                        <div class="col-6"><label class="form-label">Last Name</label><input class="form-control" placeholder="Doe" required /></div>
+                    </div>
+                    <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" placeholder="you@example.com" required /></div>
+                    <div class="mb-3"><label class="form-label">Phone</label><input type="tel" class="form-control" placeholder="+1 (555) 000-0000" /></div>
+                    <div class="mb-3 position-relative">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="regPw" placeholder="Min. 8 characters" required minlength="8" />
+                        <button type="button" class="btn btn-link position-absolute end-0 top-0 mt-4 me-1 text-muted p-1" onclick="togglePw('regPw',this)"><i class="bi bi-eye"></i></button>
+                    </div>
+                    <div class="mb-3"><label class="form-label">Confirm Password</label><input type="password" class="form-control" placeholder="Confirm your password" required minlength="8" /></div>
+                    <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/cart-badge.js"></script>
+<script>
+    // ── Featured products ──
+    (function renderFeatured() {
+        const container = document.getElementById('featuredProducts');
+        fetch('/api/products')
+            .then(res => res.json())
+            .then(products => {
+                if (!products || products.length === 0) {
+                    container.innerHTML = '<p class="text-center text-muted">No products found.</p>';
+                    return;
+                }
+                const featured = products.slice(0, 3);
+                container.innerHTML = featured.map(p => `
+          <div class="col-md-4">
+            <div class="card sc-card sc-card-lg overflow-hidden h-100">
+              <div class="img-zoom-wrap">
+                <img src="${p.imageUrl || 'images/chocolate-cake.jpg'}" class="card-img-top" alt="${p.name}" style="height: 250px; object-fit: cover;" />
+              </div>
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge rounded-pill" style="background:rgba(181,101,29,.12);color:var(--sc-primary)">${p.category || 'Bakery'}</span>
+                  <span class="small"><i class="bi bi-star-fill star-icon"></i> 4.8</span>
+                </div>
+                <h3 class="serif h6 fw-semibold mb-1">${p.name}</h3>
+                <p class="text-muted small mb-3" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.description || ''}</p>
+                <div class="d-flex align-items-center justify-content-between mt-auto">
+                  <span class="price-tag">LKR ${(p.price || 0).toFixed(2)}</span>
+                  <a href="catalog.html" class="btn btn-primary btn-sm">Add to Cart</a>
+                </div>
+              </div>
+            </div>
+          </div>`).join('');
+            })
+            .catch(err => {
+                console.error('API Error:', err);
+                container.innerHTML = '<p class="text-center text-danger">Failed to load products from API.</p>';
+            });
+    })();
+
+    // ── Auth state ──
+    let isLoggedIn = false;
+    function setLoggedIn(val, user = null) {
+        isLoggedIn = val;
+        document.getElementById('guestActions').classList.toggle('d-none', val);
+        document.getElementById('userActions').classList.toggle('d-none', !val);
+        // NOTE: guestControls / loggedInControls are optional elements — guard against null
+        const guestControls = document.getElementById('guestControls');
+        const loggedInControls = document.getElementById('loggedInControls');
+        if (guestControls) guestControls.classList.toggle('d-none', val);
+        if (loggedInControls) loggedInControls.classList.toggle('d-none', !val);
+
+        if (val && user) {
+            const userBtn = document.querySelector('#userActions .dropdown button');
+            if (userBtn) userBtn.innerHTML = `<i class="bi bi-person-circle fs-5"></i> <span class="ms-1 fw-semibold text-dark">${user.username || user.fullName || 'User'}</span>`;
+
+            const profFullName = document.getElementById('profFullName');
+            if (profFullName) {
+                profFullName.value = user.fullName || '';
+                if(user.email) document.getElementById('profEmail').value = user.email;
+                if(user.telephone) document.getElementById('profPhone').value = user.telephone;
+            }
+
+            const adminLink = document.getElementById('adminNavLink');
+            if (adminLink) {
+                adminLink.classList.toggle('d-none', user.role !== 'ADMIN');
+            }
+        } else {
+            const userBtn = document.querySelector('#userActions .dropdown button');
+            if (userBtn) userBtn.innerHTML = `<i class="bi bi-person-circle fs-5"></i>`;
+        }
+    }
+
+    // Load session on startup
+    // IMPORTANT: Only remove localStorage if JSON is actually corrupt.
+    // A DOM error inside setLoggedIn must NOT wipe the session.
+    document.addEventListener('DOMContentLoaded', () => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            let parsedUser = null;
+            try {
+                parsedUser = JSON.parse(userData);
+            } catch(e) {
+                // Only SyntaxError from JSON.parse should clear storage
+                console.error('Corrupted user data in localStorage — clearing.', e);
+                localStorage.removeItem('user');
+            }
+            if (parsedUser) {
+                setLoggedIn(true, parsedUser);
+                updateCartBadge(parsedUser.userId);
+            }
+        }
+    });
+
+    document.getElementById('logoutBtn').onclick  = () => {
+        fetch('/api/users/logout', { method: 'POST' })
+            .then(() => {
+                localStorage.removeItem('user');
+                setLoggedIn(false);
+                window.location.href = 'index.html';
+            })
+            .catch(err => {
+                localStorage.removeItem('user');
+                setLoggedIn(false);
+                window.location.href = 'index.html';
+            });
+    };
+
+    // Toggle profile section
+    const dropdownToggleBtn = document.getElementById('dropdownToggleProfileBtn');
+    if(dropdownToggleBtn) {
+        dropdownToggleBtn.onclick = function() {
+            const sec = document.getElementById('profileSection');
+            sec.classList.remove('d-none');
+            sec.scrollIntoView({ behavior: 'smooth' });
+        };
+    }
+
+    document.getElementById('profileForm').onsubmit = (e) => {
+        e.preventDefault();
+
+        const inputs = e.target.querySelectorAll('input');
+        const fullName = inputs[0].value.trim();
+        const firstName = fullName.split(' ')[0] || '';
+        const lastName = fullName.split(' ').slice(1).join(' ') || '';
+        const email = inputs[1].value;
+        const phone = inputs[2].value;
+        const password = inputs[4].value;
+
+        fetch('/api/users/update', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                telephone: phone,
+                password: password ? password : null
+            })
+        })
+            .then(res => {
+                if(res.ok) return res.json();
+                throw new Error('Update failed. Please ensure you are logged in properly.');
+            })
+            .then(data => {
+                showToast(data.message || 'Profile updated successfully!');
+
+                // Update local storage user data
+                const userData = localStorage.getItem('user');
+                if(userData) {
+                    let user = JSON.parse(userData);
+                    user.fullName = fullName;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    setLoggedIn(true, user);
+                }
+            })
+            .catch(err => {
+                showToast('Error updating profile: ' + err.message);
+            });
+    };
+
+    // ── Auth modal ──
+    function switchAuthTab(tab) {
+        document.getElementById('loginForm').classList.toggle('d-none', tab !== 'login');
+        document.getElementById('registerForm').classList.toggle('d-none', tab !== 'register');
+        document.getElementById('loginTabBtn').classList.toggle('active', tab === 'login');
+        document.getElementById('registerTabBtn').classList.toggle('active', tab === 'register');
+    }
+    function handleLogin(e) {
+        e.preventDefault();
+        bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
+        showToast('Login successful! Welcome back.');
+    }
+    function handleRegister(e) {
+        e.preventDefault();
+        bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
+        showToast('Account created! Welcome to Sweet Crumbs.');
+    }
+    function togglePw(id, btn) {
+        const input = document.getElementById(id);
+        const showing = input.type === 'text';
+        input.type = showing ? 'password' : 'text';
+        btn.querySelector('i').className = showing ? 'bi bi-eye' : 'bi bi-eye-slash';
+    }
+</script>
+</body>
+</html>

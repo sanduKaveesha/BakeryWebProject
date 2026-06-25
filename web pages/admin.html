@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard – Sweet Crumbs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" rel="preload" as="script" />
+  <link href="css/styles.css" rel="stylesheet" />
+</head>
+<body>
+<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1100"></div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-md sticky-top sc-navbar">
+  <div class="container-xl">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <i class="bi bi-cake2 text-primary fs-4"></i> Sweet Crumbs
+    </a>
+    <div class="d-flex align-items-center gap-2 ms-auto">
+      <ul class="navbar-nav d-none d-md-flex flex-row me-2">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="catalog.html">Our Products</a></li>
+        <li class="nav-item"><a class="nav-link active" href="admin.html">Admin</a></li>
+      </ul>
+      <button class="btn btn-link text-dark d-md-none" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu"><i class="bi bi-list fs-4"></i></button>
+    </div>
+  </div>
+</nav>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu">
+  <div class="offcanvas-header"><h5 class="offcanvas-title serif">Menu</h5><button class="btn-close" data-bs-dismiss="offcanvas"></button></div>
+  <div class="offcanvas-body">
+    <nav class="d-flex flex-column gap-1">
+      <a href="index.html" class="nav-link px-3 py-2" data-bs-dismiss="offcanvas">Home</a>
+      <a href="catalog.html" class="nav-link px-3 py-2" data-bs-dismiss="offcanvas">Our Products</a>
+      <a href="admin.html" class="nav-link active px-3 py-2" data-bs-dismiss="offcanvas">Admin</a>
+    </nav>
+  </div>
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="container-xl">
+    <h1 class="serif h2 fw-bold mb-1">Admin Dashboard</h1>
+    <p class="text-muted mb-0">Manage orders, users, and custom cake requests</p>
+  </div>
+</div>
+
+<section class="py-4">
+  <div class="container-xl">
+    <!-- Admin Tabs -->
+    <ul class="nav nav-tabs mb-4 overflow-auto flex-nowrap" id="adminTabs">
+      <li class="nav-item">
+        <button class="nav-link active d-flex align-items-center gap-2 text-nowrap" data-bs-toggle="tab" data-bs-target="#dashPane">
+          <i class="bi bi-grid"></i> <span class="d-none d-sm-inline">Dashboard</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link d-flex align-items-center gap-2 text-nowrap" data-bs-toggle="tab" data-bs-target="#ordersPane">
+          <i class="bi bi-box-seam"></i> <span class="d-none d-sm-inline">Manage Orders</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link d-flex align-items-center gap-2 text-nowrap" data-bs-toggle="tab" data-bs-target="#usersPane">
+          <i class="bi bi-people"></i> <span class="d-none d-sm-inline">Manage Users</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link d-flex align-items-center gap-2 text-nowrap" data-bs-toggle="tab" data-bs-target="#cakesPane">
+          <i class="bi bi-cake2"></i> <span class="d-none d-sm-inline">Custom Cakes</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- ── Dashboard Tab ── -->
+      <div class="tab-pane fade show active" id="dashPane">
+        <!-- Stats -->
+        <div class="row g-3 mb-4" id="statsGrid"></div>
+        <!-- Charts -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-7">
+            <div class="card sc-card"><div class="card-header bg-white border-bottom"><h5 class="serif mb-0">Monthly Revenue</h5></div>
+              <div class="card-body"><canvas id="revenueChart" height="120"></canvas></div></div>
+          </div>
+          <div class="col-lg-5">
+            <div class="card sc-card"><div class="card-header bg-white border-bottom"><h5 class="serif mb-0">Order Status Distribution</h5></div>
+              <div class="card-body"><canvas id="statusChart" height="160"></canvas></div></div>
+          </div>
+        </div>
+        <!-- Category chart -->
+        <div class="card sc-card mb-4">
+          <div class="card-header bg-white border-bottom"><h5 class="serif mb-0">Orders by Category</h5></div>
+          <div class="card-body"><canvas id="catChart" height="80"></canvas></div>
+        </div>
+        <!-- Recent Orders Table -->
+        <div class="card sc-card">
+          <div class="card-header bg-white border-bottom"><h5 class="serif mb-0">Recent Orders</h5></div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover table-sm mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="ps-3">Order ID</th><th>Customer</th><th>Status</th><th>Total</th><th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="recentOrdersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Orders Tab ── -->
+      <div class="tab-pane fade" id="ordersPane">
+        <div class="d-flex flex-wrap gap-3 mb-3">
+          <div class="input-group" style="max-width:280px">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control border-start-0" id="orderSearch" placeholder="Search orders…" oninput="renderOrders()" />
+          </div>
+          <select class="form-select" style="max-width:160px" id="orderStatusFilter" onchange="renderOrders()">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="baking">Baking</option>
+            <option value="ready">Ready</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <span class="text-muted small ms-auto align-self-center" id="ordersFoundLabel"></span>
+        </div>
+        <div class="card sc-card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover table-sm mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="ps-3">Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Users Tab ── -->
+      <div class="tab-pane fade" id="usersPane">
+        <div class="d-flex flex-wrap gap-3 mb-3">
+          <div class="input-group" style="max-width:280px">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control border-start-0" id="userSearch" placeholder="Search users…" oninput="renderUsers()" />
+          </div>
+          <select class="form-select" style="max-width:140px" id="roleFilter" onchange="renderUsers()">
+            <option value="all">All Roles</option>
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+          <span class="text-muted small ms-auto align-self-center" id="usersFoundLabel"></span>
+        </div>
+        <div class="card sc-card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover table-sm mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="ps-3">ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Joined</th><th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Custom Cakes Tab ── -->
+      <div class="tab-pane fade" id="cakesPane">
+        <!-- Summary cards -->
+        <div class="row g-3 mb-4" id="cakeSummaryCards"></div>
+
+        <div class="d-flex flex-wrap gap-3 mb-3">
+          <div class="input-group" style="max-width:280px">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control border-start-0" id="cakeSearch" placeholder="Search by customer, theme…" oninput="renderCakes()" />
+          </div>
+          <select class="form-select" style="max-width:160px" id="cakeStatusFilter" onchange="renderCakes()">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="baking">Baking</option>
+            <option value="decorating">Decorating</option>
+            <option value="ready">Ready</option>
+            <option value="delivered">Delivered</option>
+          </select>
+          <span class="text-muted small ms-auto align-self-center" id="cakesFoundLabel"></span>
+        </div>
+        <div class="row g-4" id="cakesGrid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Order Detail Modal -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header border-0"><h5 class="modal-title serif" id="orderModalTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body" id="orderModalBody"></div>
+  </div></div>
+</div>
+
+<!-- User Detail Modal -->
+<div class="modal fade" id="userDetailModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header border-0"><h5 class="modal-title serif">User Details</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body" id="userModalBody"></div>
+  </div></div>
+</div>
+
+<!-- Cake Detail Modal -->
+<div class="modal fade" id="cakeDetailModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header border-0"><h5 class="modal-title serif" id="cakeModalTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body" id="cakeModalBody"></div>
+  </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="js/data.js"></script>
+<script>
+// ── State ──────────────────────────────────────────────
+let adminOrders = JSON.parse(JSON.stringify(sampleOrders));
+let adminUsers  = JSON.parse(JSON.stringify(sampleUsers));
+let adminCakes  = sampleOrders.flatMap(o => o.customCakes.map(c => ({...c, orderId:o.id, customerName:o.customerName, customerEmail:o.customerEmail})));
+
+// ── Dashboard ──────────────────────────────────────────
+(function initDashboard() {
+  const totalRev  = adminOrders.reduce((s,o) => s+o.total, 0);
+  const stats = [
+    { title:'Total Revenue',    val:`$${totalRev.toLocaleString('en-US',{minimumFractionDigits:2})}`, icon:'bi-currency-dollar', change:'+12.5%', desc:'from last month' },
+    { title:'Total Orders',     val:adminOrders.length,  icon:'bi-bag',          change:'+8.2%',  desc:'from last month' },
+    { title:'Active Customers', val:adminUsers.filter(u=>u.role==='USER').length, icon:'bi-people', change:'+4.1%', desc:'new this month' },
+    { title:'Pending Orders',   val:adminOrders.filter(o=>o.status==='pending').length, icon:'bi-clock', change:'-2', desc:'from yesterday' },
+  ];
+  document.getElementById('statsGrid').innerHTML = stats.map(s => `
+    <div class="col-sm-6 col-xl-3">
+      <div class="card sc-card">
+        <div class="card-body d-flex justify-content-between align-items-start p-4">
+          <div>
+            <p class="text-muted small mb-1">${s.title}</p>
+            <p class="fs-4 fw-bold mb-1">${s.val}</p>
+            <small class="text-success"><i class="bi bi-graph-up me-1"></i>${s.change} ${s.desc}</small>
+          </div>
+          <div class="stat-icon"><i class="bi ${s.icon} fs-5"></i></div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  // Revenue chart
+  new Chart(document.getElementById('revenueChart'), {
+    type:'bar', data:{ labels:['Oct','Nov','Dec','Jan','Feb','Mar'],
+      datasets:[{label:'Revenue', data:[3200,4100,5800,4500,5200,6100], backgroundColor:'rgba(181,101,29,.7)', borderRadius:4}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+  });
+
+  // Status pie
+  new Chart(document.getElementById('statusChart'), {
+    type:'doughnut', data:{
+      labels:['Pending','Confirmed','Baking','Ready','Delivered'],
+      datasets:[{data:[8,12,6,4,35], backgroundColor:['#eab308','#3b82f6','#f97316','#22c55e','#10b981']}]},
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+
+  // Category bar
+  new Chart(document.getElementById('catChart'), {
+    type:'bar', data:{ labels:['Cakes','Pastries','Cookies','Custom'],
+      datasets:[{label:'Orders', data:[45,32,28,15], backgroundColor:'rgba(212,168,83,.7)', borderRadius:4}]},
+    options:{indexAxis:'y', plugins:{legend:{display:false}}}
+  });
+
+  // Recent orders table
+  document.getElementById('recentOrdersTable').innerHTML = adminOrders.map(o => `
+    <tr>
+      <td class="ps-3 fw-medium">#${o.id}</td>
+      <td>${o.customerName}</td>
+      <td><span class="badge rounded-pill ${statusBadgeClass(o.status)} text-capitalize">${o.status}</span></td>
+      <td class="fw-medium">$${o.total.toFixed(2)}</td>
+      <td class="text-muted">${new Date(o.createdAt).toLocaleDateString()}</td>
+    </tr>`).join('');
+})();
+
+// ── Orders Tab ─────────────────────────────────────────
+function renderOrders() {
+  const search = document.getElementById('orderSearch').value.toLowerCase();
+  const filter = document.getElementById('orderStatusFilter').value;
+  const filtered = adminOrders.filter(o => {
+    const m = o.customerName.toLowerCase().includes(search) || o.id.toString().includes(search) || o.customerEmail.toLowerCase().includes(search);
+    return m && (filter === 'all' || o.status === filter);
+  });
+  document.getElementById('ordersFoundLabel').textContent = `${filtered.length} orders found`;
+  document.getElementById('ordersTable').innerHTML = filtered.map(o => `
+    <tr>
+      <td class="ps-3 fw-semibold">#${o.id}</td>
+      <td><div class="fw-medium">${o.customerName}</div><small class="text-muted">${o.customerEmail}</small></td>
+      <td>${o.items.length + o.customCakes.length} item(s)</td>
+      <td class="fw-semibold">$${o.total.toFixed(2)}</td>
+      <td>
+        <select class="form-select form-select-sm" style="width:130px" onchange="updateOrderStatus(${o.id}, this.value)">
+          ${['pending','confirmed','baking','ready','delivered','cancelled'].map(s =>
+            `<option value="${s}" ${s===o.status?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td class="text-muted">${new Date(o.createdAt).toLocaleDateString()}</td>
+      <td><button class="btn btn-sm btn-outline-secondary" onclick="showOrderDetail(${o.id})"><i class="bi bi-eye me-1"></i>View</button></td>
+    </tr>`).join('');
+}
+
+function updateOrderStatus(id, status) {
+  adminOrders = adminOrders.map(o => o.id === id ? {...o, status} : o);
+  showToast(`Order #${id} updated to ${status}`);
+}
+
+function showOrderDetail(id) {
+  const o = adminOrders.find(x => x.id === id);
+  document.getElementById('orderModalTitle').textContent = `Order #${o.id} Details`;
+  document.getElementById('orderModalBody').innerHTML = `
+    <div class="rounded p-3 mb-3" style="background:#f5f0eb">
+      <h6 class="fw-semibold mb-1">Customer</h6>
+      <p class="mb-0">${o.customerName}</p>
+      <small class="text-muted">${o.customerEmail}</small>
+      <p class="text-muted small mt-1 mb-0"><i class="bi bi-geo-alt me-1"></i>${o.deliveryAddress}</p>
+    </div>
+    <h6 class="fw-semibold mb-2">Order Items</h6>
+    ${o.items.map(i => `<div class="d-flex justify-content-between rounded px-3 py-2 mb-1 small" style="background:#f5f0eb">
+      <span>${i.product.name} x${i.quantity}</span><span class="fw-medium">$${(i.product.price*i.quantity).toFixed(2)}</span>
+    </div>`).join('')}
+    ${o.customCakes.map(c => `<div class="d-flex justify-content-between rounded px-3 py-2 mb-1 small" style="background:rgba(181,101,29,.07)">
+      <span>Custom Cake – ${c.size} ${c.flavor} (${c.theme})</span><span class="fw-medium">$${c.price.toFixed(2)}</span>
+    </div>`).join('')}
+    <div class="d-flex justify-content-between fw-semibold border-top pt-3 mt-2">
+      <span>Total</span><span class="fs-5">$${o.total.toFixed(2)}</span>
+    </div>`;
+  new bootstrap.Modal(document.getElementById('orderDetailModal')).show();
+}
+
+// ── Users Tab ──────────────────────────────────────────
+function renderUsers() {
+  const search = document.getElementById('userSearch').value.toLowerCase();
+  const role   = document.getElementById('roleFilter').value;
+  const filtered = adminUsers.filter(u => {
+    const m = u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search) || u.phone.includes(search);
+    return m && (role === 'all' || u.role === role);
+  });
+  document.getElementById('usersFoundLabel').textContent = `${filtered.length} user${filtered.length!==1?'s':''} found`;
+  if (!filtered.length) {
+    document.getElementById('usersTable').innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No users found</td></tr>`;
+    return;
+  }
+  document.getElementById('usersTable').innerHTML = filtered.map(u => `
+    <tr>
+      <td class="ps-3 fw-medium">#${u.id}</td>
+      <td>
+        <div class="d-flex align-items-center gap-2">
+          <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center text-primary fw-bold flex-shrink-0"
+               style="width:32px;height:32px;font-size:13px">${u.name[0].toUpperCase()}</div>
+          <span class="fw-medium">${u.name}</span>
+        </div>
+      </td>
+      <td class="text-muted">${u.email}</td>
+      <td class="text-muted">${u.phone}</td>
+      <td><span class="badge ${u.role==='ADMIN'?'bg-primary':'bg-secondary'} rounded-pill">
+        <i class="bi ${u.role==='ADMIN'?'bi-shield-check':'bi-shield'} me-1"></i>${u.role}
+      </span></td>
+      <td class="text-muted">${new Date(u.joinedDate).toLocaleDateString()}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-secondary me-1" onclick="showUserDetail(${u.id})"><i class="bi bi-eye"></i></button>
+        <button class="btn btn-sm btn-outline-secondary me-1" onclick="toggleRole(${u.id})">${u.role==='ADMIN'?'Demote':'Promote'}</button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(${u.id})"><i class="bi bi-person-x"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function toggleRole(id) {
+  adminUsers = adminUsers.map(u => u.id===id ? {...u, role:u.role==='ADMIN'?'USER':'ADMIN'} : u);
+  const u = adminUsers.find(u => u.id===id);
+  showToast(`${u.name} role updated to ${u.role}`);
+  renderUsers();
+}
+function deleteUser(id) {
+  const u = adminUsers.find(u => u.id===id);
+  adminUsers = adminUsers.filter(u => u.id!==id);
+  showToast(`${u.name} removed`);
+  renderUsers();
+}
+function showUserDetail(id) {
+  const u = adminUsers.find(u => u.id===id);
+  document.getElementById('userModalBody').innerHTML = `
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center text-primary fw-bold"
+           style="width:56px;height:56px;font-size:22px">${u.name[0].toUpperCase()}</div>
+      <div><h5 class="mb-1">${u.name}</h5><span class="badge ${u.role==='ADMIN'?'bg-primary':'bg-secondary'}">${u.role}</span></div>
+    </div>
+    <div class="rounded p-3 d-flex flex-column gap-3" style="background:#f5f0eb">
+      <div class="d-flex gap-3"><i class="bi bi-envelope text-primary mt-1"></i><div><small class="text-muted d-block">Email</small>${u.email}</div></div>
+      <div class="d-flex gap-3"><i class="bi bi-telephone text-primary mt-1"></i><div><small class="text-muted d-block">Phone</small>${u.phone}</div></div>
+      <div class="d-flex gap-3"><i class="bi bi-geo-alt text-primary mt-1"></i><div><small class="text-muted d-block">Address</small>${u.address}</div></div>
+      <div class="d-flex gap-3"><i class="bi bi-calendar text-primary mt-1"></i><div><small class="text-muted d-block">Joined</small>${new Date(u.joinedDate).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</div></div>
+    </div>`;
+  new bootstrap.Modal(document.getElementById('userDetailModal')).show();
+}
+
+// ── Custom Cakes Tab ───────────────────────────────────
+const cakeStatusColors = {
+  pending:'bg-warning text-dark', confirmed:'bg-info text-white',
+  baking:'bg-orange text-white',  decorating:'bg-pink text-white',
+  ready:'bg-success text-white',  delivered:'bg-success text-white',
+};
+
+(function initCakeSummary() {
+  const pending = adminCakes.filter(c=>c.status==='pending').length;
+  const inProd  = adminCakes.filter(c=>c.status==='baking'||c.status==='decorating').length;
+  const total   = adminCakes.length;
+  document.getElementById('cakeSummaryCards').innerHTML = [
+    {cls:'bg-warning bg-opacity-10',icoCls:'bi-cake2 text-warning',val:pending,lbl:'Pending Requests'},
+    {cls:'bg-orange',               icoCls:'bi-stars',              val:inProd, lbl:'In Production',    white:true},
+    {cls:'bg-success bg-opacity-10',icoCls:'bi-calendar text-success',val:total,lbl:'Total Requests'},
+  ].map(c=>`<div class="col-sm-4">
+    <div class="card sc-card">
+      <div class="card-body d-flex align-items-center gap-3 p-4">
+        <div class="rounded ${c.cls} d-flex align-items-center justify-content-center" style="width:44px;height:44px">
+          <i class="bi ${c.icoCls} fs-5 ${c.white?'text-white':''}"></i>
+        </div>
+        <div><p class="fs-4 fw-bold mb-0">${c.val}</p><small class="text-muted">${c.lbl}</small></div>
+      </div>
+    </div>
+  </div>`).join('');
+})();
+
+function renderCakes() {
+  const search = document.getElementById('cakeSearch').value.toLowerCase();
+  const filter = document.getElementById('cakeStatusFilter').value;
+  const filtered = adminCakes.filter(c => {
+    const m = c.customerName.toLowerCase().includes(search) || c.theme.toLowerCase().includes(search) ||
+              c.flavor.toLowerCase().includes(search) || c.orderId.toString().includes(search);
+    return m && (filter==='all' || c.status===filter);
+  });
+  document.getElementById('cakesFoundLabel').textContent = `${filtered.length} request${filtered.length!==1?'s':''} found`;
+
+  if (!filtered.length) {
+    document.getElementById('cakesGrid').innerHTML = `<div class="col-12 text-center py-5">
+      <i class="bi bi-cake2 display-5 text-muted opacity-25"></i>
+      <p class="mt-3 serif h6 fw-semibold">No custom cake requests found</p>
+      <small class="text-muted">Try a different search or filter</small></div>`;
+    return;
+  }
+
+  document.getElementById('cakesGrid').innerHTML = filtered.map(c => `
+    <div class="col-md-6">
+      <div class="card sc-card">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <h4 class="serif h6 fw-semibold mb-0">Custom Cake #${c.id}</h4>
+                <span class="badge border small" style="color:var(--sc-primary);border-color:var(--sc-border)!important">Order #${c.orderId}</span>
+              </div>
+              <small class="text-muted">by ${c.customerName} (${c.customerEmail})</small>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" onclick="showCakeDetail(${c.id})">
+              <i class="bi bi-eye me-1"></i>Details
+            </button>
+          </div>
+          <hr class="my-3" />
+          <div class="row g-2 small mb-3">
+            <div class="col-6 d-flex gap-2"><i class="bi bi-rulers text-primary mt-1"></i><div><small class="text-muted d-block">Size</small><span class="fw-medium">${c.size}</span></div></div>
+            <div class="col-6 d-flex gap-2"><i class="bi bi-cake2 text-primary mt-1"></i><div><small class="text-muted d-block">Flavor</small><span class="fw-medium">${c.flavor}</span></div></div>
+            <div class="col-6 d-flex gap-2"><i class="bi bi-palette text-primary mt-1"></i><div><small class="text-muted d-block">Theme</small><span class="fw-medium">${c.theme}</span></div></div>
+            <div class="col-6 d-flex gap-2"><i class="bi bi-calendar text-primary mt-1"></i><div><small class="text-muted d-block">Delivery</small><span class="fw-medium">${new Date(c.deliveryDate).toLocaleDateString()}</span></div></div>
+          </div>
+          ${c.message ? `<div class="rounded px-3 py-2 small mb-3 d-flex gap-2" style="background:rgba(237,232,226,.6)">
+            <i class="bi bi-chat-text text-primary mt-1 flex-shrink-0"></i><span>"${c.message}"</span></div>` : ''}
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="fs-6 fw-bold">$${c.price.toFixed(2)}</span>
+            <select class="form-select form-select-sm" style="width:145px" onchange="updateCakeStatus(${c.id},this.value)">
+              ${['pending','confirmed','baking','decorating','ready','delivered'].map(s =>
+                `<option value="${s}" ${s===c.status?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function updateCakeStatus(id, status) {
+  adminCakes = adminCakes.map(c => c.id===id ? {...c, status} : c);
+  showToast(`Custom cake #${id} updated to ${status}`);
+}
+
+function showCakeDetail(id) {
+  const c = adminCakes.find(x => x.id===id);
+  document.getElementById('cakeModalTitle').textContent = `Custom Cake Request #${c.id}`;
+  document.getElementById('cakeModalBody').innerHTML = `
+    <div class="rounded p-3 mb-3" style="background:#f5f0eb">
+      <h6 class="fw-semibold mb-1">Customer</h6>
+      <p class="mb-0">${c.customerName}</p>
+      <small class="text-muted">${c.customerEmail}</small>
+      <small class="text-muted d-block">Order #${c.orderId}</small>
+    </div>
+    <h6 class="fw-semibold mb-2">Cake Specifications</h6>
+    <div class="row g-2 mb-3">
+      ${[['Size',c.size],['Flavor',c.flavor],['Theme',c.theme],['Delivery',new Date(c.deliveryDate).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})]].map(([k,v]) =>
+        `<div class="col-6"><div class="border rounded p-2"><small class="text-muted d-block">${k}</small><span class="fw-medium">${v}</span></div></div>`).join('')}
+    </div>
+    ${c.message ? `<h6 class="fw-semibold mb-2">Cake Message</h6><div class="rounded p-3 mb-3" style="background:rgba(181,101,29,.07)"><p class="mb-0 fst-italic">"${c.message}"</p></div>` : ''}
+    <div class="d-flex justify-content-between align-items-center border-top pt-3">
+      <div><small class="text-muted d-block">Status</small><span class="badge ${cakeStatusColors[c.status]||'bg-secondary'} rounded-pill text-capitalize">${c.status}</span></div>
+      <div class="text-end"><small class="text-muted d-block">Price</small><span class="fs-5 fw-bold">$${c.price.toFixed(2)}</span></div>
+    </div>`;
+  new bootstrap.Modal(document.getElementById('cakeDetailModal')).show();
+}
+
+// ── Init ───────────────────────────────────────────────
+renderOrders();
+renderUsers();
+renderCakes();
+</script>
+</body>
+</html>

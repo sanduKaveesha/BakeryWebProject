@@ -1,0 +1,113 @@
+/* ── Sweet Crumbs – Bootstrap 5 custom theme ── */
+:root {
+  --sc-primary: #b5651d;
+  --sc-primary-hover: #9a5418;
+  --sc-accent: #d4a853;
+  --sc-bg: #fdf8f3;
+  --sc-card-bg: #ffffff;
+  --sc-muted: #6c757d;
+  --sc-border: #e8ddd2;
+}
+
+/* Override Bootstrap primary */
+.btn-primary, .bg-primary { background-color: var(--sc-primary) !important; border-color: var(--sc-primary) !important; }
+.btn-primary:hover        { background-color: var(--sc-primary-hover) !important; border-color: var(--sc-primary-hover) !important; }
+.btn-outline-primary      { color: var(--sc-primary) !important; border-color: var(--sc-primary) !important; }
+.btn-outline-primary:hover{ background-color: var(--sc-primary) !important; color:#fff !important; }
+.text-primary             { color: var(--sc-primary) !important; }
+.border-primary           { border-color: var(--sc-primary) !important; }
+.badge.bg-primary         { background-color: var(--sc-primary) !important; }
+
+body { background-color: var(--sc-bg); font-family: 'Segoe UI', system-ui, sans-serif; }
+
+/* Navbar */
+.sc-navbar { background: rgba(255,255,255,.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--sc-border); }
+.sc-navbar .navbar-brand { font-family: Georgia, serif; font-weight: 700; color: #2d2016 !important; font-size: 1.3rem; }
+.sc-navbar .nav-link { color: var(--sc-muted) !important; border-radius: 6px; padding: 6px 12px !important; transition: all .2s; }
+.sc-navbar .nav-link:hover, .sc-navbar .nav-link.active { background: rgba(181,101,29,.08); color: var(--sc-primary) !important; }
+
+/* Cart badge */
+.cart-badge { position:absolute; top:-6px; right:-6px; min-width:18px; height:18px; font-size:10px; }
+
+/* Hero */
+.hero-section { position:relative; min-height:420px; display:flex; align-items:center; }
+.hero-section .hero-img { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; }
+.hero-overlay { position:absolute; inset:0; background:rgba(30,15,5,.6); }
+.hero-content { position:relative; z-index:2; }
+
+/* Page header */
+.page-header { background:var(--sc-card-bg); border-bottom:1px solid var(--sc-border); padding:3rem 0; }
+
+/* Serif headings */
+h1, h2, h3, .serif { font-family: Georgia, serif; }
+
+/* Cards */
+.sc-card { border:1px solid var(--sc-border) !important; background:var(--sc-card-bg); transition: box-shadow .2s; }
+.sc-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.1); }
+.sc-card .card-img-top { height:200px; object-fit:cover; }
+.sc-card-lg .card-img-top { height:220px; }
+
+/* Product card image zoom */
+.img-zoom-wrap { overflow:hidden; }
+.img-zoom-wrap img { transition: transform .5s; }
+.img-zoom-wrap:hover img { transform: scale(1.05); }
+
+/* Category pills */
+.cat-pill { border-radius:999px; padding:6px 16px; font-size:.85rem; font-weight:500; cursor:pointer; border:none; background:#ede8e2; color:#4a3728; transition: all .2s; }
+.cat-pill.active, .cat-pill:hover { background:var(--sc-primary); color:#fff; }
+
+/* Star */
+.star-icon { color:var(--sc-accent); }
+
+/* Sticky filters bar */
+.filters-bar { position:sticky; top:56px; z-index:40; background:rgba(253,248,243,.95); border-bottom:1px solid var(--sc-border); backdrop-filter:blur(4px); }
+
+/* Order timeline */
+.timeline-step { flex:1; display:flex; align-items:center; }
+.step-circle { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; flex-shrink:0; }
+.step-circle.done  { background:var(--sc-primary); color:#fff; }
+.step-circle.todo  { background:#e5e0d8; color:#777; }
+.step-line { flex:1; height:2px; margin:0 4px; }
+.step-line.done { background:var(--sc-primary); }
+.step-line.todo { background:#e5e0d8; }
+
+/* Custom cake dashed upload box */
+.upload-box { border:2px dashed var(--sc-border); border-radius:10px; cursor:pointer; transition: all .2s; }
+.upload-box:hover { border-color:var(--sc-primary); background:rgba(181,101,29,.04); }
+
+/* Auth modal tabs */
+.auth-tab-btn { flex:1; padding:8px; border:none; background:#f5f0eb; cursor:pointer; font-weight:500; transition:.2s; }
+.auth-tab-btn.active { background:var(--sc-primary); color:#fff; }
+.auth-tab-btn:first-child { border-radius:6px 0 0 6px; }
+.auth-tab-btn:last-child  { border-radius:0 6px 6px 0; }
+
+/* Admin stat cards */
+.stat-icon { width:44px; height:44px; border-radius:10px; background:rgba(181,101,29,.1); display:flex; align-items:center; justify-content:center; color:var(--sc-primary); }
+
+/* Table hover */
+.table-hover tbody tr:hover { background:rgba(181,101,29,.04); }
+
+/* Offcanvas mobile menu */
+.offcanvas { max-width:280px; }
+
+/* Footer */
+.sc-footer { background:var(--sc-card-bg); border-top:1px solid var(--sc-border); }
+.sc-footer h6 { font-family:Georgia,serif; text-transform:uppercase; letter-spacing:.06em; font-size:.8rem; }
+.sc-footer a { color:var(--sc-muted); text-decoration:none; font-size:.875rem; }
+.sc-footer a:hover { color:var(--sc-primary); }
+
+/* CTA section */
+.cta-section { background:var(--sc-primary); }
+
+/* Orange helper (bootstrap doesn't have this) */
+.bg-orange { background-color:#f97316 !important; }
+.bg-pink   { background-color:#ec4899 !important; }
+
+/* Price tag */
+.price-tag { font-size:1.2rem; font-weight:700; color:#2d2016; }
+
+/* Out of stock overlay */
+.out-of-stock-overlay { position:absolute; inset:0; background:rgba(30,15,5,.5); display:flex; align-items:center; justify-content:center; }
+
+/* Scrollbar for offcanvas nav */
+@media(max-width:767px) { .filters-bar { top:56px; } }
